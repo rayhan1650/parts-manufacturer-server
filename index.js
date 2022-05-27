@@ -33,18 +33,29 @@ async function run() {
       res.send(parts);
     });
 
-    app.get("/reviews", async (req, res) => {
-      const query = {};
-      const cursor = reviewsCollection.find(query);
-      const reviews = await cursor.toArray();
-      res.send(reviews);
-    });
-
     app.get("/parts/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const part = await partsCollection.findOne(query);
       res.send(part);
+    });
+
+    // get all reviews
+    app.get("/reviews", async (req, res) => {
+      const query = {};
+      const options = {
+        sort: { _id: -1 },
+      };
+      const cursor = reviewsCollection.find(query, options);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+
+    // post a review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
     });
   } finally {
   }
