@@ -128,6 +128,12 @@ async function run() {
       res.send(result);
     });
 
+    // get all bookings
+    app.get("/allbookings", verifyJWT, async (req, res) => {
+      const bookings = await bookingCollection.find().toArray();
+      res.send(bookings);
+    });
+
     // get bookings for specefic user
     app.get("/bookings", verifyJWT, async (req, res) => {
       const email = req.query.email;
