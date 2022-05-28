@@ -25,6 +25,7 @@ async function run() {
     const bookingCollection = await client
       .db("car_parts")
       .collection("bookings");
+    const userCollection = await client.db("car_parts").collection("users");
 
     app.get("/parts", async (req, res) => {
       const query = {};
@@ -41,6 +42,20 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const part = await partsCollection.findOne(query);
       res.send(part);
+    });
+
+    // upsert users
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      // const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+      res.send({ result, token });
     });
 
     // get all reviews
